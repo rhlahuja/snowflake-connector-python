@@ -796,12 +796,12 @@ def test_execute_after_close(conn_testaccount):
 def test_cancel_query(conn_cnx):
     with conn_cnx() as cnx:
         # run one query first to set the client API version to V2
-        sql = "select count(*) from table(generator(timelimit=>1))"
+        sql = "select count(*) from table(generator(timelimit=>3))"
         cnx.cursor().execute(sql)
         # cancel the query.
-        sql = "select count(*) from table(generator(timelimit=>1000))"
+        sql = "select count(*) from table(generator(timelimit=>60))"
         with pytest.raises(errors.ProgrammingError):
-            cnx.cursor().execute(sql, timeout=1)
+            cnx.cursor().execute(sql, timeout=5)
 
 
 def test_multi_table_insert(conn, db_parameters):
