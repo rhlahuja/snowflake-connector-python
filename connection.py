@@ -855,18 +855,15 @@ class SnowflakeConnection(object):
             Error.errorhandler_wrapper(
                 self, cursor, ProgrammingError, errorvalue)
 
-    def _cancel_query(self, sql, sequence_counter, request_id):
+    def _cancel_query(self, request_id):
         u"""
-        Cancels the query by the sequence counter. The sequence counter
-        is used to identify the query submitted by the client.
+        Cancels the query by the request id.
         """
-        logger.debug(u'_cancel_query sql=[%s], sequence_id=[%s]', sql,
-                     sequence_counter)
+        logger.debug(u'_cancel_query request_id=[%s]', request_id)
         url_parameters = {u'requestId': TO_UNICODE(uuid.uuid4())}
 
         return self.rest.request(
             u'/queries/v1/abort-request?' + urlencode(url_parameters), {
-                u'sqlText': sql,
                 u'requestId': TO_UNICODE(request_id),
             })
 
