@@ -135,6 +135,7 @@ def is_retryable_http_code(code):
     return 500 <= code < 600 or code in (
         BAD_REQUEST,  # 400
         FORBIDDEN,  # 403
+        METHOD_NOT_ALLOWED,  # 405
         REQUEST_TIMEOUT,  # 408
     )
 

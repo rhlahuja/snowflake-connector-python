@@ -324,7 +324,7 @@ class SnowflakeCursor(object):
 
         if real_timeout is not None:
             self._timebomb = Timer(
-                real_timeout, self.__cancel_query, [])
+                real_timeout, self.__cancel_query, [query])
             self._timebomb.start()
             logger.debug(u'started timebomb in %ss', real_timeout)
         else:
@@ -343,7 +343,7 @@ class SnowflakeCursor(object):
                     self._timebomb.cancel()
                     logger.debug(u'cancelled timebomb in finally')
                     self._timebomb = None
-                self.__cancel_query()
+                self.__cancel_query(query)
             finally:
                 if original_sigint:
                     try:
@@ -881,11 +881,12 @@ class SnowflakeCursor(object):
         """
         return iter(self.fetchone, None)
 
-    def __cancel_query(self):
+    def __cancel_query(self, query):
         if self._sequence_counter >= 0 and not self.is_closed():
-            logger.debug(u'canceled. request_id: %s', self._request_id)
+            logger.debug(u'canceled. %s, request_id: %s',
+                         query, self._request_id)
             with self._lock_canceling:
-                self._connection._cancel_query(self._request_id)
+                self._connection._cancel_query(query, self._request_id)
 
     def _row_to_python(self, row):
         """
